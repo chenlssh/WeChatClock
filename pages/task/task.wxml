@@ -1,0 +1,21 @@
+<view class="i-swipeout-demo">
+    <block wx:for="{{taskIetms}}" wx:key="index">
+        <i-swipeout  i-class="task-swipeout" 
+                     actions="{{actions}}"
+                     bind:change="deleteUserTask"
+                     data-task_id="{{item.task_id}}">
+        <view slot="content" >
+            {{item.task_name}}
+        </view>
+    </i-swipeout>
+    </block>
+</view>
+<view class="addTask">
+    <i-icon type="add" bind:tap="addUserTask" />
+</view>
+<i-modal title="任务" visible="{{addTaskVisible}}" bind:ok="submitTask" bind:cancel="closeTaskModal">
+    <i-input  bind:change="inputTaskContent"  value="{{taskContent}}"
+             type="textarea" maxlength="50" autofocus placeholder="请输入内容" />
+</i-modal>
+
+<i-message id="message" />

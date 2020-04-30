@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/task/task",
+    "pages/clock/clock",
+    "pages/statistics/statistics"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "打卡小工具",
+    "navigationBarTextStyle": "black"
+  },
+ "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/task/task",
+        "text": "任务",
+        "iconPath": "images/task.png",
+        "selectedIconPath": "images/task.png"
+      },
+      {
+        "pagePath": "pages/clock/clock",
+        "text": "打卡",
+        "iconPath": "images/my.png",
+        "selectedIconPath": "images/mySelected.png"
+      },
+      {
+        "pagePath": "pages/statistics/statistics",
+        "text": "统计",
+        "iconPath": "images/my.png",
+        "selectedIconPath": "images/mySelected.png"
+      }
+    ],
+    "color": "#bfbfbf",
+    "selectedColor": "#1AAD19"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "i-swipeout": "../dist/swipeout/index",
+    "i-icon": "../dist/icon/index",
+    "i-modal": "../dist/modal/index",
+    "i-button": "../dist/button/index",
+    "i-input": "../dist/input/index",
+    "i-message": "../dist/message/index"
+  }
+}

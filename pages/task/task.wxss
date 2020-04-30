@@ -1,0 +1,4 @@
+/* pages/task/task.wxss */
+.task-swipeout{
+    font-size: large;
+}
