@@ -1,2 +1,8 @@
-<!--pages/statistics/statistics.wxml-->
-<text>pages/statistics/statistics.wxml</text>
+<i-cell-group>
+    <block wx:for="{{cards}}" wx:key="index">
+        <i-cell title="{{item.task_name}}"
+                label="立下壮志之时：{{item.startdate}}"
+                value="完成{{item.totalnum}}次">
+        </i-cell>
+    </block>
+</i-cell-group>

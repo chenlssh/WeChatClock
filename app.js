@@ -1,39 +1,53 @@
-//app.js
+// 获取域名信息
+const api = require('./config/config.js');
 App({
   onLaunch: function () { //当小程序初始化完成时，会触发 onLaunch（全局只触发一次）
-    // 展示本地存储能力
-    var logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
-    // 登录
-    wx.login({
-      success: res => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-      }
-    })
-    // 获取用户信息
-    wx.getSetting({
-      success: res => {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
-          wx.getUserInfo({
-            success: res => {
-              // 可以将 res 发送给后台解码出 unionId
-              this.globalData.userInfo = res.userInfo
-
-              // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-              // 所以此处加入 callback 以防止这种情况
-              if (this.userInfoReadyCallback) {
-                this.userInfoReadyCallback(res)
-              }
-            }
-          })
-        }
-      }
-    })
+    let that = this;
+    that.checkUserStatus();
   },
-  globalData: {
-    userInfo: null
+  checkUserStatus: function () {
+    let that = this;
+    /* 检查用户注册状态 */
+    if(that.getRegisterStatus() === "NEED_REGISTER" || that.getRegisterStatus() === "" ||
+       that.getWxOpenId() === ""){
+      that.doLogin();
+    }
+  },
+
+  doLogin: function () {
+    let that = this;
+        // 登录，获取微信登录code
+        wx.login({
+          success: function(loginRes) {
+            console.log(loginRes);
+            if(loginRes.code){
+              wx.request({
+                url: api.baseUrl+"checkRegisterStatus",
+                data: {
+                  code:loginRes.code
+                },
+                header: {'content-type':'application/json'},
+                method: 'POST',
+                success: (res)=>{
+                  wx.setStorageSync('registerStatus', res.data.registerStatus); // 用户是否已经注册，若无则需获取用户信息注册
+                  wx.setStorageSync('wxOpenId', res.data.wxOpenId); // 缓存用户openId
+                },
+                fail: ()=>{
+                  console.log("connect with seriver had some error");
+                }
+              });
+            }else{
+              console.log("fail to get loginCode!!!");
+            }
+          }
+        })
+  },
+  // 获取用户注册标识 供全局调用
+  getRegisterStatus: function () {
+    return wx.getStorageSync('registerStatus');
+  },
+  // 获取微信openId 供全局调用
+  getWxOpenId: function () {
+    return wx.getStorageSync('wxOpenId');
   }
 })

@@ -1,149 +1,113 @@
-// 关于本示例的 $Message ，可以查看 Message 组件的介绍
-
-const { $Message } = require('../dist/base/index');
-
+// 获取域名信息
+const api = require('../../config/config.js');
+const {$Toast} = require('../dist/base/index');
+const app = getApp(); // 获取app应用实例
+let registerStatus; // 用户注册状态 NEED_REGISTER-待注册；HAVING_REGISTER-已注册
 Page({
     data: {
-        visible1: false,
-        visible2: false,
-        visible3: false,
-        visible4: false,
-        visible5: false,
-        value1: '',
-        value2: '',
-        value3: '',
-        value4: '输入框已禁用',
-        value5: '',
-        value6: '',
-        value7: '',
-        actions3: [
-            {
-                name: '现金支付',
-                color: '#2d8cf0',
+        taskIetms:[],
+        ismask:""
+    },
+    getUserTaskList: function(){
+        let that = this;
+        console.log(api.todayClockTaskUrl);
+        wx.request({
+            url: api.todayClockTaskUrl+'getTodayTaskList',
+            method: "POST",
+            data:{
+                user_id: app.getWxOpenId()
             },
-            {
-                name: '微信支付',
-                color: '#19be6b'
+            header: {
+                'Content-Type': 'application/json'
             },
-            {
-                name: '取消'
+            success: function(res) {
+                let data = res.data;
+                that.setData({
+                    taskIetms:data
+                })
+            },
+            error: function(err){
+                console.log(err);
             }
-        ],
-        actions4: [
-            {
-                name: '按钮1'
+        })
+    },
+    clockCard:function(clockMsg){
+        let clockCardMsg = clockMsg.currentTarget.dataset;
+        console.log(clockCardMsg);
+        console.log(clockMsg);
+        wx.request({
+            url: api.todayClockTaskUrl+'clockTodayTask',
+            method: 'POST',
+            data:{
+                user_id: app.getWxOpenId(),
+                task_id: clockCardMsg.id
             },
-            {
-                name: '按钮2',
-                color: '#ff9900'
-            },
-            {
-                name: '按钮3',
-                icon: 'search'
-            }
-        ],
-        actions5: [
-            {
-                name: '取消'
-            },
-            {
-                name: '删除',
-                color: '#ed3f14',
-                loading: false
-            }
-        ]
-    },
-
-    handleOpen1 () {
-        this.setData({
-            visible1: true
-        });
-    },
-
-    handleClose1 () {
-        this.setData({
-            visible1: false
-        });
-    },
-
-    handleOpen2 () {
-        this.setData({
-            visible2: true
-        });
-    },
-
-    handleClose2 () {
-        this.setData({
-            visible2: false
-        });
-    },
-
-    handleOpen3 () {
-        this.setData({
-            visible3: true
-        });
-    },
-
-    handleClick3 ({ detail }) {
-        const index = detail.index;
-
-        if (index === 0) {
-            $Message({
-                content: '点击了现金支付'
-            });
-        } else if (index === 1) {
-            $Message({
-                content: '点击了微信支付'
-            });
-        }
-
-        this.setData({
-            visible3: false
-        });
-    },
-
-    handleOpen4 () {
-        this.setData({
-            visible4: true
-        });
-    },
-
-    handleClick4 () {
-        this.setData({
-            visible4: false
-        });
-    },
-
-    handleOpen5 () {
-        this.setData({
-            visible5: true
-        });
-    },
-
-    handleClick5 ({ detail }) {
-        if (detail.index === 0) {
-            this.setData({
-                visible5: false
-            });
-        } else {
-            const action = [...this.data.actions5];
-            action[1].loading = true;
-
-            this.setData({
-                actions5: action
-            });
-
-            setTimeout(() => {
-                action[1].loading = false;
-                this.setData({
-                    visible5: false,
-                    actions5: action
-                });
-                $Message({
-                    content: '删除成功！',
+            success: function() {
+                $Toast({
+                    content: '打卡成功',
                     type: 'success'
                 });
-            }, 2000);
+                setTimeout(() => {
+                    $Toast.hide();
+                }, 1000);
+            },
+            error: function(err){
+                $Toast({
+                    content: '请稍后再试',
+                    type: 'error'
+                });
+                setTimeout(() => {
+                    $Toast.hide();
+                }, 1000);
+            }
+        })
+    },
+    closeHide:function(e){
+        this.setData({
+          ismask: 'none'
+        });
+    },
+    bindGetUserInfo:function(res){
+        let that = this;
+        let userInfo = res.detail.userInfo;
+        //获取用户信息，绑定用户
+        wx.request({
+            url: api.baseUrl+'register',
+            method: 'POST',
+            data:{
+                open_id: app.getWxOpenId(),
+                wx_nick_name: userInfo.nickName,
+                gender: userInfo.gender
+            },
+            success: function(){
+                wx.setStorageSync('registerStatus', "HAVING_REGISTER");
+                that.getUserTaskList();
+            },
+            error: function(err){
+                $Toast({
+                    content: '授权失败',
+                    type: 'error'
+                });
+                setTimeout(() => {
+                    $Toast.hide();
+                }, 1000);
+            }
+        })
+    },
+    /**
+     * 生命周期函数--监听页面加载
+     */
+    onLoad: function(options) {
+        let that = this;
+        registerStatus = app.getRegisterStatus();
+        console.log(registerStatus);
+        if(registerStatus === "HAVING_REGISTER"){
+            that.closeHide();
+            that.getUserTaskList();
         }
+    },
+    onTabItemTap(item) {
+        let that = this;
+        that.getUserTaskList();
     }
 });

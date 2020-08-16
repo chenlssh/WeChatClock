@@ -1,8 +1,8 @@
 {
   "pages": [
-    "pages/task/task",
     "pages/clock/clock",
-    "pages/statistics/statistics"
+    "pages/statistics/statistics",
+    "pages/task/task"
   ],
   "window": {
     "backgroundTextStyle": "light",

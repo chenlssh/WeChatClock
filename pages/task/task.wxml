@@ -14,8 +14,7 @@
     <i-icon type="add" bind:tap="addUserTask" />
 </view>
 <i-modal title="任务" visible="{{addTaskVisible}}" bind:ok="submitTask" bind:cancel="closeTaskModal">
-    <i-input  bind:change="inputTaskContent"  value="{{taskContent}}"
-             type="textarea" maxlength="50" autofocus placeholder="请输入内容" />
+    <i-input  bind:change="inputTaskContent"  value="{{taskContent}}" type="textarea" maxlength="50" />
 </i-modal>
 
 <i-message id="message" />

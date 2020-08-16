@@ -1,7 +1,8 @@
-
 // 获取域名信息
 const api = require('../../config/config.js');
 const { $Message } = require('../dist/base/index');
+// 获取app应用实例
+const app = getApp();
 
 Page({
     data : {
@@ -22,7 +23,11 @@ Page({
     getUserTaskList: function(){
         let that = this;
         wx.request({
-            url: api.userTaskUrl+'getTaskList/001',
+            url: api.userTaskUrl+'getTaskList',
+            method: 'POST',
+            data: {
+                user_id: app.getWxOpenId()
+            },
             header: {
                 'Content-Type': 'application/json'
             },
@@ -45,7 +50,7 @@ Page({
             url: api.userTaskUrl+'deleteUserTask',
             method: 'POST',
             data:{
-                user_id: '001',
+                user_id: app.getWxOpenId(),
                 task_id: delInfo.task_id
             },
             success:function(){
@@ -78,7 +83,7 @@ Page({
             url: api.userTaskUrl+'saveUserTask',
             method: 'POST',
             data:{
-                user_id: '001',
+                user_id: app.getWxOpenId(),
                 task_name: taskContentTemp
             },
             success:function(){
@@ -111,5 +116,4 @@ Page({
         let that = this;
         that.getUserTaskList();
     }
-    
 });
